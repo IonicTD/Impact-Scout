@@ -113,7 +113,8 @@ export async function searchTeams(regional: string, year: string): Promise<Team[
   return teamsAtEvent.map(team => {
     // Filter awards to only show relevant ones
     const relevantAwards = team.awards.filter(award => 
-      IMPACT_AWARD_TYPES.includes(award.name)
+      IMPACT_AWARD_TYPES.includes(award.name) &&
+      award.year >= 2022
     );
     
     return {
