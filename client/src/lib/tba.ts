@@ -47,8 +47,7 @@ export async function getTeamImpactHistory(teamKey: string, apiKey: string): Pro
   const awards = await response.json();
   
   return awards.filter((award: any) => 
-    IMPACT_AWARD_TYPES.includes(award.award_type) &&
-    (award.name.includes("Championship") || award.name.includes("Hall of Fame"))
+    IMPACT_AWARD_TYPES.includes(award.award_type)
   ).map((award: any) => ({
     name: award.name,
     year: award.year,

@@ -1,6 +1,12 @@
 import { Team, Award } from "./types";
 
 const IMPACT_AWARDS = [
+  "Impact Award",
+  "Chairman's Award",
+  "Regional Impact Award",
+  "Regional Chairman's Award",
+  "District Impact Award",
+  "District Chairman's Award",
   "Championship Impact Award",
   "Championship Chairman's Award"
 ];
