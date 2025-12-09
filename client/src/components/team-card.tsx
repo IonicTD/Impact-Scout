@@ -47,7 +47,7 @@ export function TeamCard({ team, index }: TeamCardProps) {
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm font-medium text-primary/80 uppercase tracking-wider">
               <Trophy className="h-4 w-4" />
-              <span>Hall of Fame History</span>
+              <span>Hall of Fame Inductee</span>
             </div>
             <div className="space-y-2">
               {team.awards.map((award, i) => (
