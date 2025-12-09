@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Loader2, Trophy, AlertCircle } from "lucide-react";
+import { Search, Loader2, Trophy, AlertCircle, Key, Settings2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { searchTeams, type Team } from "@/lib/mock-tba";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { searchTeamsReal, validateApiKey } from "@/lib/tba";
+import { searchTeams as searchTeamsMock } from "@/lib/mock-tba";
+import { type Team } from "@/lib/types";
 import { TeamCard } from "@/components/team-card";
 import { useToast } from "@/hooks/use-toast";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 // Import the generated background image
 import heroBg from "@assets/generated_images/futuristic_robotics_competition_arena_background.png";
@@ -22,6 +26,9 @@ const formSchema = z.object({
 export default function Home() {
   const [results, setResults] = useState<Team[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [statusMessage, setStatusMessage] = useState("Accessing The Blue Alliance Database...");
+  const [apiKey, setApiKey] = useState("");
+  const [isApiKeyOpen, setIsApiKeyOpen] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -32,23 +39,61 @@ export default function Home() {
     },
   });
 
+  // Load API key from local storage on mount
+  useEffect(() => {
+    const storedKey = localStorage.getItem("tba_api_key");
+    if (storedKey) setApiKey(storedKey);
+  }, []);
+
+  const saveApiKey = (key: string) => {
+    setApiKey(key);
+    localStorage.setItem("tba_api_key", key);
+    toast({ title: "API Key Saved", description: "Your key is stored locally in your browser." });
+    setIsApiKeyOpen(false);
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     setResults(null);
+    setStatusMessage("Searching for event...");
+
     try {
-      const teams = await searchTeams(values.regional, values.year);
-      setResults(teams);
-      if (teams.length === 0) {
+      if (apiKey) {
+        // Real API Search
+        setStatusMessage("Authenticating with The Blue Alliance...");
+        const isValid = await validateApiKey(apiKey);
+        
+        if (!isValid) {
+          throw new Error("Invalid API Key. Please check your settings.");
+        }
+
+        setStatusMessage("Fetching event teams...");
+        const teams = await searchTeamsReal(values.regional, values.year, apiKey);
+        setResults(teams);
+        
+        if (teams.length === 0) {
+          toast({
+            title: "No matches found",
+            description: "We found the event, but no teams there have won Impact/Chairman's since 2022.",
+            variant: "default",
+          });
+        }
+      } else {
+        // Fallback to Mock
+        setStatusMessage("Simulating Search (No API Key provided)...");
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Fake delay
+        const teams = await searchTeamsMock(values.regional, values.year);
+        setResults(teams);
         toast({
-          title: "No teams found",
-          description: "No teams at this event have won Impact/Chairman's recently.",
+          title: "Simulation Mode",
+          description: "Results are simulated because no API Key was provided.",
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to fetch data from The Blue Alliance.",
+        description: error.message || "Failed to fetch data.",
         variant: "destructive",
       });
     } finally {
@@ -77,6 +122,45 @@ export default function Home() {
             backgroundSize: "40px 40px"
         }}
       />
+
+      {/* API Key Dialog Trigger - Top Right */}
+      <div className="absolute top-4 right-4 z-50">
+        <Dialog open={isApiKeyOpen} onOpenChange={setIsApiKeyOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="bg-background/50 backdrop-blur border-primary/20 hover:border-primary/50">
+              <Key className="w-4 h-4 mr-2" />
+              {apiKey ? "API Key Configured" : "Set API Key"}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md bg-card border-primary/20">
+            <DialogHeader>
+              <DialogTitle className="font-display tracking-wider">TBA API Configuration</DialogTitle>
+              <DialogDescription>
+                To get real data, you need a Read API Key from The Blue Alliance.
+                <br />
+                <a href="https://www.thebluealliance.com/account" target="_blank" className="text-primary hover:underline">
+                  Get your key here
+                </a>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <FormLabel>Auth Key</FormLabel>
+                <Input 
+                  id="apikey" 
+                  placeholder="Paste your X-TBA-Auth-Key here" 
+                  defaultValue={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)} // Temporary state
+                  className="font-mono text-xs"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" onClick={() => saveApiKey(apiKey)}>Save Configuration</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <main className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center min-h-screen">
         
@@ -116,11 +200,14 @@ export default function Home() {
                       <FormLabel className="text-primary/80 font-display tracking-wide uppercase text-xs">Event Name</FormLabel>
                       <FormControl>
                         <Input 
-                          placeholder="e.g. Silicon Valley Regional" 
+                          placeholder="e.g. Silicon Valley" 
                           {...field} 
                           className="bg-background/50 border-primary/20 focus:border-primary/60 h-12 text-lg"
                         />
                       </FormControl>
+                      <FormDescription className="text-xs">
+                        Enter part of the event name (e.g. "Sacramento")
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -163,6 +250,16 @@ export default function Home() {
                 </Button>
               </form>
             </Form>
+
+            {!apiKey && (
+              <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
+                <AlertCircle className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
+                <p className="text-xs text-yellow-500/90">
+                  <span className="font-bold">Note:</span> Without an API Key, results are simulated. 
+                  Click "Set API Key" in the top right to enable real data.
+                </p>
+              </div>
+            )}
           </div>
         </motion.div>
 
@@ -177,7 +274,7 @@ export default function Home() {
                 className="flex flex-col items-center justify-center py-20 space-y-4"
               >
                 <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-                <p className="text-primary/60 font-mono animate-pulse">Accessing The Blue Alliance Database...</p>
+                <p className="text-primary/60 font-mono animate-pulse">{statusMessage}</p>
               </motion.div>
             )}
 

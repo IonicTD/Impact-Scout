@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { Award, ExternalLink, MapPin, Trophy } from "lucide-react";
+import { ExternalLink, MapPin, Trophy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { Team } from "@/lib/mock-tba";
+import type { Team } from "@/lib/types";
 
 interface TeamCardProps {
   team: Team;
