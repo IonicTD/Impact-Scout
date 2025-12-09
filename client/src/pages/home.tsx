@@ -75,7 +75,7 @@ export default function Home() {
         if (teams.length === 0) {
           toast({
             title: "No matches found",
-            description: "We found the event, but no teams there have won Impact/Chairman's since 2022.",
+            description: "We found the event, but no teams have won Impact/Chairman's since 2022.",
             variant: "default",
           });
         }
@@ -176,10 +176,13 @@ export default function Home() {
             <Trophy className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-4xl md:text-6xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-blue-400 to-primary/50">
-            IMPACT SCOUT
+            IMPACT SCOUTER
           </h1>
           <p className="text-muted-foreground text-lg md:text-xl font-light">
-            Identify teams at your regional with a history of cultural excellence.
+            Identify teams at your regional with a history of excellence.
+          </p>
+          <p className="text-muted-foreground text-lg md:text-xl font-light">
+            Generate your READ API Key in the profile page of The Blue Alliance.
           </p>
         </motion.div>
 
