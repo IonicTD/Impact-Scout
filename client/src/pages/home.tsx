@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Loader2, Trophy, AlertCircle, Key, Settings2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { searchTeamsReal, validateApiKey } from "@/lib/tba";
 import { searchTeams as searchTeamsMock } from "@/lib/mock-tba";
@@ -145,7 +146,7 @@ export default function Home() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <FormLabel>Auth Key</FormLabel>
+                <Label htmlFor="apikey">Auth Key</Label>
                 <Input 
                   id="apikey" 
                   placeholder="Paste your X-TBA-Auth-Key here" 
