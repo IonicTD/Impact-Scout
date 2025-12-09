@@ -47,7 +47,7 @@ export function TeamCard({ team, index }: TeamCardProps) {
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm font-medium text-primary/80 uppercase tracking-wider">
               <Trophy className="h-4 w-4" />
-              <span>Recent Major Awards</span>
+              <span>Hall of Fame History</span>
             </div>
             <div className="space-y-2">
               {team.awards.map((award, i) => (
@@ -56,7 +56,7 @@ export function TeamCard({ team, index }: TeamCardProps) {
                   className="bg-primary/5 border border-primary/10 rounded-md p-2 text-sm flex justify-between items-center"
                 >
                   <span className="font-medium text-foreground/90">{award.name}</span>
-                  <Badge variant="outline" className="border-primary/30 text-primary">
+                  <Badge variant="outline" className={`border-primary/30 ${award.year >= 2022 ? "bg-primary/20 text-primary font-bold" : "text-muted-foreground"}`}>
                     {award.year}
                   </Badge>
                 </div>
