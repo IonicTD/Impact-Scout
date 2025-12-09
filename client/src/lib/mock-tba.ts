@@ -11,6 +11,9 @@ const IMPACT_AWARDS = [
   "Championship Chairman's Award"
 ];
 
+// Helper for checking if award is an Impact/Chairman's award
+const IMPACT_AWARD_TYPES = IMPACT_AWARDS; // Alias for consistency with real API logic
+
 // Mock database of teams with relevant award history
 const MOCK_TEAMS: Team[] = [
   {
@@ -108,14 +111,14 @@ export async function searchTeams(regional: string, year: string): Promise<Team[
   const teamsAtEvent = MOCK_TEAMS.filter(() => Math.random() > 0.3); // Randomly include teams
 
   return teamsAtEvent.map(team => {
-    // Filter awards to only show relevant ones since 2022
-    const recentImpactAwards = team.awards.filter(award => 
-      award.year >= 2022 && IMPACT_AWARDS.includes(award.name)
+    // Filter awards to only show relevant ones
+    const relevantAwards = team.awards.filter(award => 
+      IMPACT_AWARD_TYPES.includes(award.name)
     );
     
     return {
       ...team,
-      awards: recentImpactAwards
+      awards: relevantAwards
     };
   }).filter(team => team.awards.length > 0); // Only return teams that have won
 }
