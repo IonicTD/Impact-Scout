@@ -1,18 +1,4 @@
-export interface Award {
-  name: string;
-  year: number;
-  event: string;
-}
-
-export interface Team {
-  team_number: number;
-  nickname: string;
-  city: string;
-  state_prov: string;
-  country: string;
-  website?: string;
-  awards: Award[];
-}
+import { Team, Award } from "./types";
 
 const IMPACT_AWARDS = [
   "Impact Award",
