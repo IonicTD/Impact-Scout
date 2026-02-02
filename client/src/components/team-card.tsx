@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { ExternalLink, MapPin, Trophy } from "lucide-react";
+import { FileText, MapPin, Trophy } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Team } from "@/lib/types";
 
 interface TeamCardProps {
@@ -27,16 +28,6 @@ export function TeamCard({ team, index }: TeamCardProps) {
                 {team.nickname}
               </h3>
             </div>
-            {team.website && (
-              <a
-                href={team.website}
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <ExternalLink className="h-5 w-5" />
-              </a>
-            )}
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
             <MapPin className="h-4 w-4" />
@@ -50,17 +41,39 @@ export function TeamCard({ team, index }: TeamCardProps) {
               <span>Award History</span>
             </div>
             <div className="space-y-2">
-              {team.awards.map((award, i) => (
-                <div 
-                  key={i} 
-                  className="bg-primary/5 border border-primary/10 rounded-md p-2 text-sm flex justify-between items-center"
-                >
-                  <span className="font-medium text-foreground/90">{award.name}</span>
-                  <Badge variant="outline" className={`border-primary/30 ${award.year >= 2022 ? "bg-primary/20 text-primary font-bold" : "text-muted-foreground"}`}>
-                    {award.year}
-                  </Badge>
-                </div>
-              ))}
+              {team.awards.map((award, i) => {
+                const essayUrl = `https://info.firstinspires.org/hubfs/web/program/frc/awards/fia-essays/${award.year}/${team.team_number}.pdf`;
+                return (
+                  <div 
+                    key={i} 
+                    className="bg-primary/5 border border-primary/10 rounded-md p-2 text-sm flex justify-between items-center"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-foreground/90">{award.name}</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <a
+                              href={essayUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-primary hover:text-primary/80 transition-colors"
+                            >
+                              <FileText className="h-4 w-4" />
+                            </a>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Read Winning Essay</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <Badge variant="outline" className={`border-primary/30 ${award.year >= 2022 ? "bg-primary/20 text-primary font-bold" : "text-muted-foreground"}`}>
+                      {award.year}
+                    </Badge>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </CardContent>
