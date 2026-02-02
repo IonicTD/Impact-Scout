@@ -28,8 +28,6 @@ export default function Home() {
   const [results, setResults] = useState<Team[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("Accessing The Blue Alliance Database...");
-  const [apiKey, setApiKey] = useState("");
-  const [isApiKeyOpen, setIsApiKeyOpen] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -40,18 +38,8 @@ export default function Home() {
     },
   });
 
-  // Load API key from local storage on mount
-  useEffect(() => {
-    const storedKey = localStorage.getItem("tba_api_key");
-    if (storedKey) setApiKey(storedKey);
-  }, []);
-
-  const saveApiKey = (key: string) => {
-    setApiKey(key);
-    localStorage.setItem("tba_api_key", key);
-    toast({ title: "API Key Saved", description: "Your key is stored locally in your browser." });
-    setIsApiKeyOpen(false);
-  };
+  // Use the provided API key
+  const API_KEY = "nrmyzS11DXKYrKuTYscr5L9frhql59DkXA0wa4Vopz4W8Bb4l9HahdTF6j32Zae7";
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -59,36 +47,23 @@ export default function Home() {
     setStatusMessage("Searching for event...");
 
     try {
-      if (apiKey) {
-        // Real API Search
-        setStatusMessage("Authenticating with The Blue Alliance...");
-        const isValid = await validateApiKey(apiKey);
-        
-        if (!isValid) {
-          throw new Error("Invalid API Key. Please check your settings.");
-        }
+      // Real API Search
+      setStatusMessage("Authenticating with The Blue Alliance...");
+      const isValid = await validateApiKey(API_KEY);
+      
+      if (!isValid) {
+        throw new Error("TBA API Key validation failed.");
+      }
 
-        setStatusMessage("Fetching event teams...");
-        const teams = await searchTeamsReal(values.regional, values.year, apiKey);
-        setResults(teams);
-        
-        if (teams.length === 0) {
-          toast({
-            title: "No matches found",
-            description: "We found the event, but no teams have won Impact/Chairman's since 2022.",
-            variant: "default",
-          });
-        }
-      } else {
-        // Fallback to Mock
-        setStatusMessage("Simulating Search (No API Key provided)...");
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Fake delay
-        const teams = await searchTeamsMock(values.regional, values.year);
-        setResults(teams);
+      setStatusMessage("Fetching event teams...");
+      const teams = await searchTeamsReal(values.regional, values.year, API_KEY);
+      setResults(teams);
+      
+      if (teams.length === 0) {
         toast({
-          title: "Simulation Mode",
-          description: "Results are simulated because no API Key was provided.",
-          variant: "destructive",
+          title: "No matches found",
+          description: "We found the event, but no teams have won Impact/Chairman's since 2022.",
+          variant: "default",
         });
       }
     } catch (error: any) {
@@ -124,45 +99,6 @@ export default function Home() {
         }}
       />
 
-      {/* API Key Dialog Trigger - Top Right */}
-      <div className="absolute top-4 right-4 z-50">
-        <Dialog open={isApiKeyOpen} onOpenChange={setIsApiKeyOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="sm" className="bg-background/50 backdrop-blur border-primary/20 hover:border-primary/50">
-              <Key className="w-4 h-4 mr-2" />
-              {apiKey ? "API Key Configured" : "Set API Key"}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-card border-primary/20">
-            <DialogHeader>
-              <DialogTitle className="font-display tracking-wider">TBA API Configuration</DialogTitle>
-              <DialogDescription>
-                To get real data, you need a Read API Key from The Blue Alliance.
-                <br />
-                <a href="https://www.thebluealliance.com/account" target="_blank" className="text-primary hover:underline">
-                  Get your key here
-                </a>
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="apikey">Auth Key</Label>
-                <Input 
-                  id="apikey" 
-                  placeholder="Paste your X-TBA-Auth-Key here" 
-                  defaultValue={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)} // Temporary state
-                  className="font-mono text-xs"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit" onClick={() => saveApiKey(apiKey)}>Save Configuration</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-
       <main className="relative z-10 container mx-auto px-4 py-12 flex flex-col items-center min-h-screen">
         
         {/* Header */}
@@ -180,9 +116,6 @@ export default function Home() {
           </h1>
           <p className="text-muted-foreground text-lg md:text-xl font-light">
             Identify teams at your regional with a history of excellence.
-          </p>
-          <p className="text-muted-foreground text-lg md:text-xl font-light">
-            Generate your READ API Key in the profile page of The Blue Alliance.
           </p>
         </motion.div>
 
@@ -254,16 +187,6 @@ export default function Home() {
                 </Button>
               </form>
             </Form>
-
-            {!apiKey && (
-              <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md flex items-start gap-2">
-                <AlertCircle className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
-                <p className="text-xs text-yellow-500/90">
-                  <span className="font-bold">Note:</span> Without an API Key, results are simulated. 
-                  Click "Set API Key" in the top right to enable real data.
-                </p>
-              </div>
-            )}
           </div>
         </motion.div>
 

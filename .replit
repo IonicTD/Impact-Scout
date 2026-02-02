@@ -41,3 +41,8 @@ waitForPort = 5000
 
 [agent]
 mockupState = "FULLSTACK"
+
+[userenv]
+
+[userenv.shared]
+TBA_API_KEY = "nrmyzS11DXKYrKuTYscr5L9frhql59DkXA0wa4Vopz4W8Bb4l9HahdTF6j32Zae7"
