@@ -11,13 +11,13 @@
 
   /* Crit Hit Theme Colors */
   --color-background: hsl(220 30% 9%); /* Deep dark */
-  --color-foreground: hsl(210 40% 98%);
+  --color-foreground: hsl(47 95% 72%); /* Gold yellow */
 
   --color-card: hsl(220 25% 14%);
-  --color-card-foreground: hsl(210 40% 98%);
+  --color-card-foreground: hsl(47 95% 72%);
 
   --color-popover: hsl(220 30% 9%);
-  --color-popover-foreground: hsl(210 40% 98%);
+  --color-popover-foreground: hsl(47 95% 72%);
 
   --color-primary: hsl(180 100% 38%); /* #00c1c1 teal */
   --color-primary-foreground: hsl(220 30% 9%);
@@ -26,7 +26,7 @@
   --color-secondary-foreground: hsl(210 40% 98%);
 
   --color-muted: hsl(220 20% 20%);
-  --color-muted-foreground: hsl(215 20% 60%);
+  --color-muted-foreground: hsl(47 80% 55%); /* Muted gold */
 
   --color-accent: hsl(47 97% 53%); /* #fbca13 gold */
   --color-accent-foreground: hsl(220 30% 9%);
