@@ -16,8 +16,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
-// Import the generated background image
-import heroBg from "@assets/generated_images/futuristic_robotics_competition_arena_background.png";
 
 const formSchema = z.object({
   regional: z.string().min(2, "Regional name must be at least 2 characters"),
@@ -83,9 +81,7 @@ export default function Home() {
       <div 
         className="fixed inset-0 z-0 pointer-events-none opacity-20"
         style={{
-          backgroundImage: `url(${heroBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundImage: `radial-gradient(ellipse at 50% 0%, hsl(var(--primary)/0.3) 0%, transparent 70%)`,
         }}
       />
       <div className="fixed inset-0 z-0 bg-gradient-to-b from-background via-background/95 to-background pointer-events-none" />
