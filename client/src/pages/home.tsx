@@ -107,7 +107,7 @@ export default function Home() {
           <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-full mb-4 border border-primary/20">
             <Trophy className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-4xl md:text-6xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-blue-400 to-primary/50">
+          <h1 className="text-4xl md:text-6xl font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-cyan-300 to-primary/70">
             IMPACT SCOUTER
           </h1>
           <p className="text-muted-foreground text-lg md:text-xl font-light">
